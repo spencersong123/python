@@ -1,0 +1,106 @@
+# coding=utf-8
+#__author__ = 'bingzheng song'
+
+from __future__ import division
+# 引入division库的目的是执行精确除法
+# 比如在python2.7中，默认情况下1/2=0，然而引入这个包之后就可以执行精确除法1/2=0.5
+
+
+import wx
+class MyFrame(wx.Frame):
+    def __init__(self,title,size):
+        super(MyFrame,self).__init__(None,title=title,size=size)
+        self.w=size[0]
+        self.h=size[1]
+        # 将整个界面的宽度和高度保存下来
+        self.equaltion=""
+        # 该变量存储计算器中需要在显示屏中显示的信息，比如要计算3+2的值，依次按键3、+、2,
+        # equaltion的值依次为3、3+、3+2
+        self.initUI()
+        # initUI函数作用是初始化一个计算器界面
+        self.Centre()
+        # 整个界面居中（在屏幕中央）
+        self.Show()
+        # 显示整个界面
+    def initUI(self):
+        # self是MyFrame类型，也就是wx.Frame类型，是整个界面的指针
+        vbox=wx.BoxSizer(wx.VERTICAL)
+        # 声明一个盒子,带有一个参数，表示盒子中是以垂直方式布局
+        self.textPrint=wx.TextCtrl(self,style=wx.TE_READONLY|wx.ALIGN_RIGHT,size=(self.w,self.h*0.15))
+        # 生成一个文本框（这个地方把它弄成MyFrame的一个属性是因为显示self.equaltion的值
+        # 时比较方便）,第一个参数是文本框所在的布局界面，也就是self，style指定了文本框的
+        # 样式，只读和右对齐，size指定了文本框的大小，跟整个界面一样宽
+        self.textPrint.SetFont(wx.Font(self.h*0.1,wx.SWISS,wx.NORMAL,wx.NORMAL))
+        # 指定文本框中要显示的文本的字体，传入wx.Font类型，该函数需要指定4个参数，第一个
+        # 参数是字体大小，第2,3,4个参数意义不详（不过没啥关系）
+        vbox.Add(self.textPrint, flag=wx.EXPAND)
+        # 将文本框添加到vbox中，flag参数的意义是填充方式，wx.EXPAND是行填充，传入此参数
+        # 表示文本框宽度和界面宽度相同。
+        labels=["7","8","9","+","exit",
+                "4","5","6","-","del",
+                "1","2","3","*","AC",
+                "0",".","%","/","=",
+                "(",")","00","",""]
+        gridSizer=wx.GridSizer(5,5)
+        # 生成一个5*5的表格（表格是由5行5列按钮组成）
+        for label in labels:
+            button=wx.Button(self,label=label)
+            # 生成每个按钮，第一个参数是按钮需要在哪个界面显示，第二个参数是按钮显示内容
+            button.SetFont(wx.Font(25,wx.SWISS,wx.NORMAL,wx.NORMAL))
+            # 指定按钮样式，与上同
+            self.createHandler(button,label)
+            # 绑定按钮，就是按钮点击时触发的事件
+            gridSizer.Add(button,1,wx.EXPAND)
+            # 将按钮添加到表格中，1表示列上完全填充，wx.EXPAND表示行上完全填充
+        vbox.Add(gridSizer, proportion=1,flag=wx.EXPAND)
+        # 把gridSizer表格添加到VBox中去
+        self.SetSizer(vbox)
+        # 把VBox内容放到界面中
+    def createHandler(self,button,label):
+        # 整个项目精华部分（前面的函数都是在生成界面，从这个函数开始介绍响应事件）
+        items_set = ("exit","del","AC","=")
+        if label not in items_set:
+            self.Bind(wx.EVT_BUTTON,self.onAppend,button)
+        elif label=="exit":
+            self.Bind(wx.EVT_BUTTON,self.onExit,button)
+        elif label=="del":
+            self.Bind(wx.EVT_BUTTON, self.onDel, button)
+        elif label=="AC":
+            self.Bind(wx.EVT_BUTTON, self.onAC, button)
+        else:
+            self.Bind(wx.EVT_BUTTON, self.onTarget, button)
+    def onAppend(self,event):
+        # 添加事件，按下此按钮，equaltion的值加上按钮的值
+        eventButton=event.GetEventObject()
+        label=eventButton.GetLabel()
+        self.equaltion+=label
+        self.textPrint.SetValue(self.equaltion)
+    def onDel(self,event):
+        # 删除事件，按下此按钮，equaltion的值-1
+        self.equaltion=self.equaltion[:-1]
+        self.textPrint.SetValue(self.equaltion)
+    def onAC(self,event):
+        # 清除事件，按下此按钮，equaltion的值清空
+        self.equaltion=""
+        self.textPrint.SetValue(self.equaltion)
+    def onTarget(self,event):
+        # 计算事件，按下此按钮，计算equaltion的值并显示
+        try:
+            if self.equaltion.isalpha():
+                # 本身就是一个数字
+                self.textPrint.SetValue(self.equaltion)
+            else:
+                result=eval(self.equaltion)
+                # 这个地方显示出python强大之处，可以根据表达式求值
+                self.equaltion=""
+                self.textPrint.SetValue(str(result))
+                # 前面提到要把文本框设置成MyFrame的属性，好处就在这里，
+                # 可以很方便的把结果显示出来
+        except SyntaxError:
+            self.textPrint.SetValue("语法错误".decode("utf-8"))
+            self.equaltion=""
+    def onExit(self,event):
+        self.Close()
+app=wx.App()
+frame=MyFrame("这是宋炳政写的计算器".decode("utf-8"),(600,450))
+app.MainLoop()
