@@ -1,0 +1,31 @@
+本文并非作者原创，本文来自 zsyoung 的CSDN 博客 ，全文地址请点击：https://blog.csdn.net/zsyoung/article/details/78849982?utm_source=copy
+
+在这里只是把相关步骤清晰明化一下：
+
+1.安装node.js
+
+       下载链接：https://nodejs.org/en/download/，选择对应版本下载，下载完成之后安装，记得勾选注册环境变量的选项。
+
+2.安装anyproxy服务器
+
+       anyproxy是通过node.js安装的，所以第一步很重要，安装命令是npm install anyproxy
+
+3.安装安卓模拟器
+
+       在本项目中，抓取微信是通过安卓模拟器上进行，因此需要下载一个安卓模拟器，本项目采用海马玩安卓模拟器，下载链接：http://droid4x.haimawan.com/，下载完成后安装微信app并正确登录。
+
+4.安装HTTPS 网络传输所需的证书
+
+       这一步需要两个地方安装证书，一是电脑端，在命令行窗口中输入命令anyproxy –root，会在当前目录下生成rootCA.crt和rootCA.key两个文件，证书是rootCA.crt，在电脑端双击安装即可，在安卓模拟器端也需要安装该证书，同样是这个文件rootCA.crt,想办法把他发送给安卓模拟器中，比如安卓模拟器下载QQ，然后使用QQ传输，同样在安卓模拟器中安装证书，证书名字可以随意去。
+
+5.修改程序部分：
+
+   在AppData\Roaming\npm\node_modules\anyproxy\lib（anyproxy安装目录）中替换lib下面的这些文件，文件下载地址是https://gitee.com/zsyoung01/AnyProxy，下载完成后到lib目录下替换到相同的文件即可。
+
+6.设置安卓模拟器中网络代理：
+
+    要让anyproxy可以抓取安卓模拟器中的微信信息，还需要设置安卓模拟器中的网络代理，设置的方法是，打开安卓模拟器的设置，找到wi-fi,单击进入，就可以看到安卓模拟器正在使用的网络，长按该网络，选择“修改网络”，勾选显示高级选项，将“代理设置”选为手动，然后输入代理服务器主机名，也就是本机的IP，如果不清楚IP可以在命令行中输入ipconfig/all可以查看IP，端口号一般为8001，最重要一步，点击保存，不然白折腾了。
+
+7.抓取开始：
+
+   在命令行中启动anyproxy，输入命令anyproxy -i.打开微信app，搜索公众号，点击历史消息，剩下的就交给程序啦。
