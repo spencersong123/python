@@ -1,0 +1,16 @@
+1.xpath选择器从当前节点往下搜寻
+http://www.w3school.com.cn/xpath/xpath_syntax.asp
+以上是w3school上的xpath语法介绍，下面有个问题，
+div_list = response.xpath("//div[@class='quote']")
+for each_div in div_list:
+    content = each_div.xpath(".//span[@class='text']/text()").extract_first()
+    author = each_div.xpath(".//small[@class='author']/text()").extract_first()
+    tag_list = each_div.xpath(".//a[@class='tag']/text()").extract()
+ 
+在使用scrapy框架书写爬虫的时候，使用xpath找到了需要的div_list标签组成的数组，然后依次遍历每个div，我的需求是，从每个div中继续寻找子节点，语法应该怎么写呢，因为是从每个div（而不是根节点）开始寻找，因此第一步需要选取当前节点，在xpath语法中，使用.表示选取当前节点，然后再选择所有的子节点。之前做的时候不知道先选取当前节点，选出来的一直都不是自己需要的。
+
+2.xpath选择器在选择具有复合class节点的时候，不能按照有其中一个就能选到节点的标准，比如某个div的class为quote post,虽然中间是空格，使用selenium按class选择的时候，满足两个中的任意一个就行，但是使用scrapy框架的response进行选择时，则需要response.xpath("//div[@class='quote post']")才行。
+
+3.scrapy爬虫的调试技巧
+
+在命令行中输入scrapy shell http://lab.scrapyd.cn，就可以进行调试，在弹出对话框中的In[1]:  后面输入 all_div = response.xpath("//div[@class='quote post']")就能查看是否爬取成功。
