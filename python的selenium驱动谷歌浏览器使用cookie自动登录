@@ -1,0 +1,16 @@
+在使用python进行爬虫的时候，可能网站有登录机制，如果每次都需要输入用户名密码进行登录，则比较麻烦，cookie保存了用户登录信息，如果在登录的时候自动添加好cookie信息，那么就可以跳过登录的步骤，那么，如何实现这一机制呢。
+
+python的selenium库可以驱动谷歌浏览器访问一些网站，模拟人类的某些行为，那么，我们怎么样才能给selenium的 webdriver添加cookie信息呢？以下步骤以微博为例。
+
+1.首先登录，先驱动谷歌浏览器访问微博的登录页面，输入用户名和密码，然后使用webdriver的get_cookies()方法可以获取登录城后之后的cookies，随后，将该cookies信息保存到文件中。
+
+2.第二次访问该网站某一个人的微博，注意，这个时候可以默认已经登录了，url是该微博的主页（在没有登录的情况下会自动跳转到登录页面），随后读取第一步生成的cookie文件，一般第一步生成的cookie是一个列表，然后循环遍历该cookie，并使用webdriver的add_cookie()方法添加cookie，然后就可以访问网站啦。
+
+ 
+
+注意在这个过程中如果出现    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.WebDriverException: Message: unable to set cookie问题，是由于在添加cookie之前没有访问网站，也就是说，需要先访问微博的某个网址，然后才能添加cookie，即添加cookie需要明确在哪个网站上添加cookie，代码如下：
+driver = webdriver.Chrome()
+driver.get(url)
+for each_cookie in cookie_list:
+    driver.add_cookie(each_cookie)
