@@ -14,3 +14,6 @@ for each_div in div_list:
 3.scrapy爬虫的调试技巧
 
 在命令行中输入scrapy shell http://lab.scrapyd.cn，就可以进行调试，在弹出对话框中的In[1]:  后面输入 all_div = response.xpath("//div[@class='quote post']")就能查看是否爬取成功。
+
+4.获取当前xpath节点的文本属性(当前节点是td)
+td.xpath("string(.)").extract_first()
